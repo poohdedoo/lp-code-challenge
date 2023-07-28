@@ -1,9 +1,12 @@
 package com.littlepay.code.challenge.load;
 
 import com.littlepay.code.challenge.Tap;
+import com.littlepay.code.challenge.persistence.TripDataPersisterInitializationException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -15,21 +18,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CSVBasedTapDataLoader implements TapDataLoader {
-    private final Path sourcePath;
+    private final Path inputDirPath;
+    private static final String TAP_DATA_SOURCE_PATH = "taps.csv";
+    private static final Logger LOG = LogManager.getLogger(CSVBasedTapDataLoader.class);
 
-    public CSVBasedTapDataLoader(final Path sourcePath) {
-        this.sourcePath = sourcePath;
+    public CSVBasedTapDataLoader(final Path inputDirPath) throws TapDataLoaderInitializationException {
+        this.inputDirPath = inputDirPath;
+        this.init();
+    }
+
+    private void init() throws TapDataLoaderInitializationException {
+        if (!Files.exists(inputDirPath)) {
+            try {
+                Files.createDirectory(inputDirPath);
+                LOG.warn("Input directory didn't exist. Therefore, it has been created automatically.");
+            } catch (IOException e) {
+                throw new TapDataLoaderInitializationException(
+                        "Error occurred while initializing the tap data loader", e);
+            }
+        }
+
+        if (!Files.exists(inputDirPath.resolve(TAP_DATA_SOURCE_PATH))) {
+            throw new TapDataLoaderInitializationException("The input data file does not exist.");
+        }
     }
 
     @Override
     public List<Tap> getTaps() throws TapDataLoaderException {
-        if (!Files.exists(sourcePath)) {
-            throw new TapDataLoaderException("The input data file does not exist.");
-        }
-
         List<Tap> taps = new ArrayList<>(0);
         try (
-                Reader reader = Files.newBufferedReader(this.sourcePath);
+                Reader reader = Files.newBufferedReader(inputDirPath.resolve(TAP_DATA_SOURCE_PATH));
                 CSVParser parser = new CSVParser(reader,
                         CSVFormat.DEFAULT.builder()
                                 .setHeader("ID", "DateTimeUTC", "TapType", "StopId", "CompanyId", "BusId", "PAN")

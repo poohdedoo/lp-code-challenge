@@ -1,9 +1,6 @@
 package com.littlepay.code.challenge;
 
-import com.littlepay.code.challenge.load.CSVBasedTapDataLoader;
-import com.littlepay.code.challenge.load.TapDataLoader;
-import com.littlepay.code.challenge.load.TapDataLoaderException;
-import com.littlepay.code.challenge.load.TapDataLoaderFactory;
+import com.littlepay.code.challenge.load.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.junit.jupiter.api.Assertions;
@@ -32,16 +29,17 @@ public class TapDataProviderTests {
     }
 
     @Test
-    public void whenInputDoesntExist_dataProviderExceptionThrown() {
-        Assertions.assertThrows(TapDataLoaderException.class, () -> {
-            TapDataLoader tapDataProvider = new CSVBasedTapDataLoader(Paths.get(
-                    System.getProperty("user.dir"), "input", TAP_DATA_CSV_FILE_NAME));
+    public void whenInputDoesntExist_dataLoaderInitializationExceptionThrown() {
+        Assertions.assertThrows(TapDataLoaderInitializationException.class, () -> {
+            TapDataLoader tapDataProvider =
+                    new CSVBasedTapDataLoader(Paths.get(System.getProperty("user.dir"), "input"));
             tapDataProvider.getTaps();
         });
     }
 
     @Test
-    public void whenInputExists_listOfValidTapsReturned() throws TapDataLoaderException, IOException, ParseException {
+    public void whenInputExists_listOfValidTapsReturned() throws
+            TapDataLoaderException, IOException, ParseException, TapDataLoaderInitializationException {
         Path path = Paths.get(System.getProperty("user.dir"), "input", TAP_DATA_CSV_FILE_NAME);
 
         try (BufferedWriter writer = new BufferedWriter(Files.newBufferedWriter(path));

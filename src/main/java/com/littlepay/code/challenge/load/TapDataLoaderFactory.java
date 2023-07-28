@@ -7,10 +7,7 @@ import java.nio.file.Paths;
  * logic.
  */
 public class TapDataLoaderFactory {
-    private static final String TAP_DATA_SOURCE_PATH = "taps.csv";
-
-    public static TapDataLoader getTapDataProvider() {
-        return new CSVBasedTapDataLoader(
-                Paths.get(System.getProperty("user.dir"), "input", TAP_DATA_SOURCE_PATH));
+    public static TapDataLoader getTapDataProvider() throws TapDataLoaderInitializationException {
+        return new CSVBasedTapDataLoader(Paths.get(System.getProperty("user.dir"), "input"));
     }
 }

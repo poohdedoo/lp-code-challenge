@@ -3,6 +3,7 @@ package com.littlepay.code.challenge;
 import com.littlepay.code.challenge.load.TapDataLoader;
 import com.littlepay.code.challenge.load.TapDataLoaderException;
 import com.littlepay.code.challenge.load.TapDataLoaderFactory;
+import com.littlepay.code.challenge.load.TapDataLoaderInitializationException;
 import com.littlepay.code.challenge.persistence.TripDataPersistenceException;
 import com.littlepay.code.challenge.persistence.TripDataPersister;
 import com.littlepay.code.challenge.persistence.TripDataPersisterFactory;
@@ -33,11 +34,11 @@ public class TripProcessor {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Beginning to load tap data.");
         }
-        TapDataLoader tapDataProvider = TapDataLoaderFactory.getTapDataProvider();
         List<Tap> taps;
         try {
+            TapDataLoader tapDataProvider = TapDataLoaderFactory.getTapDataProvider();
             taps = tapDataProvider.getTaps();
-        } catch (TapDataLoaderException e) {
+        } catch (TapDataLoaderInitializationException | TapDataLoaderException e) {
             String message = "Error occurred while fetching tap data.";
             LOG.error(message, e);
             throw new TripProcessorException(message, e);
