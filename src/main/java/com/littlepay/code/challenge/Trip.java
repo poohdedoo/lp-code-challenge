@@ -16,7 +16,8 @@ public class Trip {
 
     public enum Status {
         COMPLETED,
-        INCOMPLETE
+        INCOMPLETE,
+        CANCELLED
     }
 
     public Trip() {}

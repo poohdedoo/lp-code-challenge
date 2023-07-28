@@ -1,6 +1,7 @@
 package com.littlepay.code.challenge;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class Tap {
     private int id;
@@ -83,5 +84,9 @@ public class Tap {
 
     public void setPan(String pan) {
         this.pan = pan;
+    }
+
+    public boolean isSameStopAs(Tap tap) {
+        return Objects.equals(this.stopId, tap.stopId);
     }
 }
