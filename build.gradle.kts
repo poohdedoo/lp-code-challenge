@@ -1,9 +1,14 @@
 plugins {
     id("java")
+    id("application")
 }
 
 group = "com.littlepay.code.challenge"
-version = "0.0.1"
+version = "1.0.0"
+
+application {
+    mainClass = "com.littlepay.code.challenge.TripProcessor"
+}
 
 repositories {
     mavenCentral()
@@ -24,6 +29,16 @@ dependencies {
     implementation("org.jgrapht:jgrapht-core:1.5.2")
 }
 
+// Task to run JUnit tests.
 tasks.test {
     useJUnitPlatform()
+}
+
+// Task to create an executable jar file.
+tasks.jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes["Main-Class"] = application.mainClass
+    }
+    from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
 }
