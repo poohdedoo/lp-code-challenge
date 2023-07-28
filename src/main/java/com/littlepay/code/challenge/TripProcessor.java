@@ -25,6 +25,9 @@ public class TripProcessor {
     }
 
     public void processTrips() throws TripProcessorException {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Beginning to load tap data.");
+        }
         TapDataLoader tapDataProvider = TapDataLoaderFactory.getTapDataProvider();
         List<Tap> taps;
         try {
@@ -34,9 +37,22 @@ public class TripProcessor {
             LOG.error(message, e);
             throw new TripProcessorException(message, e);
         }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Tap data loaded successfully.");
+        }
 
-        List<Trip> trips = TripProcessorUtil.generateTrips(taps);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Beginning to generate trip data from taps.");
+        }
+        TripBuilder tripBuilder = new TripBuilder(taps);
+        List<Trip> trips = tripBuilder.buildTrips();
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Trip data from taps generated successfully.");
+        }
 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Beginning to persist trip data.");
+        }
         TripDataPersister tripDataPersister = TripDataPersisterFactory.getTripDataPersister();
         try {
             tripDataPersister.persist(trips);
@@ -44,6 +60,9 @@ public class TripProcessor {
             String message = "Error occurred while persisting trip data.";
             LOG.error(message, e);
             throw new TripProcessorException(message, e);
+        }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Trip data persisted successfully.");
         }
     }
 }
