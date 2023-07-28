@@ -7,10 +7,7 @@ import java.nio.file.Paths;
  * logic.
  */
 public class TripDataPersisterFactory {
-    private static final String TRIP_DATA_TARGET_PATH = "trips.csv";
-
-    public static TripDataPersister getTripDataPersister() {
-        return new CSVBasedTripDataPersister(
-                Paths.get(System.getProperty("user.dir"), "output", TRIP_DATA_TARGET_PATH));
+    public static TripDataPersister getTripDataPersister() throws TripDataPersisterInitializationException {
+        return new CSVBasedTripDataPersister(Paths.get(System.getProperty("user.dir"), "output"));
     }
 }

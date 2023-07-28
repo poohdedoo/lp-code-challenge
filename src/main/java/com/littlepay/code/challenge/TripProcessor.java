@@ -3,9 +3,10 @@ package com.littlepay.code.challenge;
 import com.littlepay.code.challenge.load.TapDataLoader;
 import com.littlepay.code.challenge.load.TapDataLoaderException;
 import com.littlepay.code.challenge.load.TapDataLoaderFactory;
-import com.littlepay.code.challenge.persistence.TapDataPersistenceException;
+import com.littlepay.code.challenge.persistence.TripDataPersistenceException;
 import com.littlepay.code.challenge.persistence.TripDataPersister;
 import com.littlepay.code.challenge.persistence.TripDataPersisterFactory;
+import com.littlepay.code.challenge.persistence.TripDataPersisterInitializationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -57,10 +58,10 @@ public class TripProcessor {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Beginning to persist trip data.");
         }
-        TripDataPersister tripDataPersister = TripDataPersisterFactory.getTripDataPersister();
         try {
+            TripDataPersister tripDataPersister = TripDataPersisterFactory.getTripDataPersister();
             tripDataPersister.persist(trips);
-        } catch (TapDataPersistenceException e) {
+        } catch (TripDataPersisterInitializationException | TripDataPersistenceException e) {
             String message = "Error occurred while persisting trip data.";
             LOG.error(message, e);
             throw new TripProcessorException(message, e);

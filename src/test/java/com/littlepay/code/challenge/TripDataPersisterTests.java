@@ -1,11 +1,16 @@
 package com.littlepay.code.challenge;
 
-import com.littlepay.code.challenge.persistence.TapDataPersistenceException;
+import com.littlepay.code.challenge.persistence.TripDataPersistenceException;
 import com.littlepay.code.challenge.persistence.TripDataPersister;
 import com.littlepay.code.challenge.persistence.TripDataPersisterFactory;
+import com.littlepay.code.challenge.persistence.TripDataPersisterInitializationException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,15 +21,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class TripDataPersisterTests {
     private static final String TRIP_DATA_CSV_FILE_NAME = "trips.csv";
 
-//    @BeforeAll
-//    public static void init() throws IOException {
-//        Files.deleteIfExists(Paths.get(
-//                System.getProperty("user.dir"), "output", TRIP_DATA_CSV_FILE_NAME));
-//    }
+    @BeforeAll
+    public static void init() throws IOException {
+        Files.deleteIfExists(Paths.get(
+                System.getProperty("user.dir"), "output", TRIP_DATA_CSV_FILE_NAME));
+    }
 
     @Test
     public void whenTripInfoIsNull_throwException() {
-        TapDataPersistenceException thrown = Assertions.assertThrows(TapDataPersistenceException.class, () -> {
+        TripDataPersistenceException thrown = Assertions.assertThrows(TripDataPersistenceException.class, () -> {
             TripDataPersister persister = TripDataPersisterFactory.getTripDataPersister();
             persister.persist(null);
         });
@@ -33,7 +38,7 @@ public class TripDataPersisterTests {
 
     @Test
     public void whenTripInfoIsEmpty_throwException() {
-        TapDataPersistenceException thrown = Assertions.assertThrows(TapDataPersistenceException.class, () -> {
+        TripDataPersistenceException thrown = Assertions.assertThrows(TripDataPersistenceException.class, () -> {
             TripDataPersister persister = TripDataPersisterFactory.getTripDataPersister();
             persister.persist(new ArrayList<>(0));
         });
@@ -41,7 +46,8 @@ public class TripDataPersisterTests {
     }
 
     @Test
-    public void whenTripInfoIsValid_writeToCsv() throws TapDataPersistenceException, ParseException {
+    public void whenTripInfoIsValid_writeToCsv() throws
+            TripDataPersistenceException, ParseException, TripDataPersisterInitializationException {
         List<Trip> trips = new ArrayList<>();
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         trips.add(new Trip(
