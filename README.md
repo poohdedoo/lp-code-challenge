@@ -19,7 +19,7 @@ This repository includes the source code of an application developed as a respon
 
 `>git clone https://github.com/poohdedoo/lp-code-challenge`
 
-**Step 2:** Change the current working directory to the PROJECT_HOME directory (i.e. lp-code-challenge/.).
+**Step 2:** Change the current working directory to the `PROJECT_HOME` directory (i.e. lp-code-challenge/.).
 
 `>cd lp-code-challenge`
 
@@ -27,11 +27,11 @@ This repository includes the source code of an application developed as a respon
 
 `>./gradlew jar`
 
-Once done, the executable jar file (i.e. `lp-code-challenge-1.0.0.jar`) could be located in `PROJECT_HOME/build/lib/` directory.
+Once done, the executable jar file (i.e. `lp-code-challenge-1.0.0.jar`) could be located in `$PROJECT_HOME/build/lib/` directory.
 
 **Step 4:** Copy the executable jar file to your preferred location in the file system.
 
-`>cd ./build/lib/lp-code-challenge-1.0.0.jar ~/YOU_PREFERRED_LOCATION`
+`>cp ./build/libs/lp-code-challenge-1.0.0.jar [YOU_PREFERRED_LOCATION]`
 
 **Step 5:** Within the aforementioned directory, create a folder named `input`, and copy the `taps.csv` file found in `$PROJECT_HOME/input` directory into it.
 
