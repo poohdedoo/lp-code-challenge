@@ -20,6 +20,9 @@ public class Trip {
         CANCELLED
     }
 
+    public static final String DESTINATION_UNKNOWN = "Unknown";
+    public static final String DESTINATION_NA = "N/A";
+
     public Trip() {}
 
     public Trip(final Date startTime, final Date endTime, final String origin, final String destination,

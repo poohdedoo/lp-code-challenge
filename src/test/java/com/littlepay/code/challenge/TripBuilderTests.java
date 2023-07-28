@@ -162,6 +162,7 @@ public class TripBuilderTests {
         assertEquals(7.30, trip.getFee());
         assertEquals(Trip.Status.INCOMPLETE, trip.getStatus());
         assertEquals("5500005555555559", trip.getPan());
+        assertEquals(Trip.DESTINATION_UNKNOWN, trip.getDestination());
     }
 
     @Test
@@ -183,6 +184,7 @@ public class TripBuilderTests {
         assertEquals(0, trip.getFee());
         assertEquals(Trip.Status.CANCELLED, trip.getStatus());
         assertEquals("5500005555555559", trip.getPan());
+        assertEquals(Trip.DESTINATION_NA, trip.getDestination());
     }
 
     @Test

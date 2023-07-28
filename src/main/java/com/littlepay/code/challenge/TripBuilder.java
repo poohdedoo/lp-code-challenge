@@ -1,6 +1,10 @@
 package com.littlepay.code.challenge;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class TripBuilder {
@@ -67,12 +71,12 @@ public class TripBuilder {
 
         private static Trip buildIncompleteTrip(Tap tap) {
             double fare = calculateFee(tap.getStopId(), null, Trip.Status.INCOMPLETE);
-            return new TripBuilderHelper().buildTrip(tap, fare, Trip.Status.INCOMPLETE);
+            return new TripBuilderHelper().buildTrip(tap, Trip.DESTINATION_UNKNOWN, fare, Trip.Status.INCOMPLETE);
         }
 
         private static Trip buildCancelledTrip(Tap tap) {
             double fare = calculateFee(tap.getStopId(), tap.getStopId(), Trip.Status.CANCELLED);
-            return new TripBuilderHelper().buildTrip(tap, fare, Trip.Status.CANCELLED);
+            return new TripBuilderHelper().buildTrip(tap, Trip.DESTINATION_NA, fare, Trip.Status.CANCELLED);
         }
 
         private static Trip buildCompletedTrip(Tap tap1, Tap tap2) {
@@ -82,7 +86,7 @@ public class TripBuilder {
             return new TripBuilderHelper().buildTrip(tap1, tap2.getDateTime(), destination, fee);
         }
 
-        private Trip buildTrip(Tap tap, double fee, Trip.Status status) {
+        private Trip buildTrip(Tap tap, String destination, double fee, Trip.Status status) {
             Trip trip = new Trip();
             trip.setStartTime(tap.getDateTime());
             trip.setEndTime(tap.getDateTime()); // Sets the end time to be the same as start time
@@ -90,13 +94,14 @@ public class TripBuilder {
             trip.setCompanyId(tap.getCompanyId());
             trip.setBusId(tap.getBusId());
             trip.setPan(tap.getPan());
+            trip.setDestination(destination);
             trip.setFee(fee);
             trip.setStatus(status);
             return trip;
         }
 
         private Trip buildTrip(Tap tap1, Date endTime, String destination, double fee) {
-            Trip trip = buildTrip(tap1, fee, Trip.Status.COMPLETED);
+            Trip trip = buildTrip(tap1, destination, fee, Trip.Status.COMPLETED);
             trip.setEndTime(endTime);
             trip.setDestination(destination);
             return trip;
