@@ -15,13 +15,17 @@ public class TripProcessor {
     private static final Logger LOG = LogManager.getLogger(TripProcessor.class);
 
     public static void main(String[] args) throws TripProcessorException {
+        LOG.info("Beginning to run the trip data generation application.");
+
         TripProcessor tripProcessor = new TripProcessor();
         try {
             tripProcessor.processTrips();
         } catch (TripProcessorException e) {
-            LOG.error("Error occurred while generating trip info.", e);
+            LOG.error("Error occurred while generating trip data.", e);
             throw e;
         }
+
+        LOG.info("Trip data generation application has successfully concluded.");
     }
 
     public void processTrips() throws TripProcessorException {
