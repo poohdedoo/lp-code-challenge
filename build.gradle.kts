@@ -20,6 +20,8 @@ dependencies {
 
     // CSV parsing and generating related dependencies.
     implementation("org.apache.commons:commons-csv:1.10.0")
+
+    implementation("org.jgrapht:jgrapht-core:1.5.2")
 }
 
 tasks.test {
