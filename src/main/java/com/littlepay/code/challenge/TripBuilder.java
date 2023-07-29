@@ -33,7 +33,9 @@ public class TripBuilder {
             buildTripsForPan(trips, sortedTapsOfPan);
         }
 
-        return trips;
+        return trips.stream()
+                .sorted(Comparator.comparing(Trip::getStartTime))
+                .collect(Collectors.toList());
     }
 
     private List<Tap> sortTapsOfPan(List<Tap> tapsOfPan) {

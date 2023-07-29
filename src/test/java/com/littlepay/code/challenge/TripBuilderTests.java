@@ -8,6 +8,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -244,7 +246,7 @@ public class TripBuilderTests {
     }
 
     @Test
-    public void whenOrderedCompletedTapDataOfMultipleUsersProvided_returnsValidTripData() throws ParseException {
+    public void whenOrderedMixedTapDataOfMultipleUsersProvided_returnsValidTripData() throws ParseException {
         List<Tap> taps = new ArrayList<>();
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         taps.add(new Tap(1, sdf.parse("22-01-2023 13:00:00"), Tap.Type.ON, "Stop1", "Company1", "Bus37", "5500005555555559"));
@@ -261,19 +263,48 @@ public class TripBuilderTests {
         assertEquals(3, trips.size());
 
         Trip trip = trips.get(0);
-        assertEquals(3.25, trip.getFee());
-        assertEquals(Trip.Status.COMPLETED, trip.getStatus());
-        assertEquals("5500005555555559", trip.getPan());
-
-        trip = trips.get(1);
         assertEquals(7.30, trip.getFee());
         assertEquals(Trip.Status.INCOMPLETE, trip.getStatus());
         assertEquals("4111111111111111", trip.getPan());
+
+        trip = trips.get(1);
+        assertEquals(3.25, trip.getFee());
+        assertEquals(Trip.Status.COMPLETED, trip.getStatus());
+        assertEquals("5500005555555559", trip.getPan());
 
         trip = trips.get(2);
         assertEquals(0, trip.getFee());
         assertEquals(Trip.Status.CANCELLED, trip.getStatus());
         assertEquals("4111111111111111", trip.getPan());
+    }
+
+    @Test
+    public void whenMixedTapDataOfMultipleUsersProvided_returnsTripDataOrderedByStartDateTime() throws ParseException {
+        List<Tap> taps = new ArrayList<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        taps.add(new Tap(1, sdf.parse("22-01-2023 13:00:00"), Tap.Type.ON, "Stop1", "Company1", "Bus37", "5500005555555559"));
+        taps.add(new Tap(2, sdf.parse("22-01-2023 13:05:00"), Tap.Type.OFF, "Stop2", "Company1", "Bus37", "5500005555555559"));
+        taps.add(new Tap(3, sdf.parse("22-01-2023 09:20:00"), Tap.Type.ON, "Stop3", "Company1", "Bus36", "4111111111111111"));
+        taps.add(new Tap(4, sdf.parse("23-01-2023 08:00:00"), Tap.Type.ON, "Stop1", "Company1", "Bus37", "4111111111111111"));
+        taps.add(new Tap(5, sdf.parse("23-01-2023 08:02:00"), Tap.Type.OFF, "Stop1", "Company1", "Bus37", "4111111111111111"));
+
+        TripBuilder tripBuilder = new TripBuilder(taps);
+
+        List<Trip> trips = tripBuilder.buildTrips();
+        assertNotNull(trips, "Trip data returned is null. Expected a non-null response.");
+        assertFalse(trips.isEmpty(), "Trip data returned is empty. Expected a non-empty response.");
+        assertEquals(3, trips.size());
+
+        Iterator<Trip> iterator = trips.iterator();
+        if (iterator.hasNext()) {
+            Date prevDate = iterator.next().getStartTime();
+            while (iterator.hasNext()) {
+                Date currDate = iterator.next().getStartTime();
+                assertTrue(currDate.after(prevDate),
+                        "Trips aren't ordered in a way that the most recent trip always appears last.");
+                prevDate = currDate;
+            }
+        }
     }
 
     @Test
@@ -288,4 +319,6 @@ public class TripBuilderTests {
         assertNotNull(trips, "Trip data returned is null. Expected a non-null response.");
         assertTrue(trips.isEmpty(), "Trip data returned is non-empty. Expected an empty response.");
     }
+
+
 }
