@@ -1,5 +1,8 @@
 package com.littlepay.code.challenge;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -9,6 +12,7 @@ import java.util.stream.Collectors;
 
 public class TripBuilder {
     private final List<Tap> taps;
+    private static final Logger LOG = LogManager.getLogger(TripBuilder.class);
 
     public TripBuilder(final List<Tap> taps) {
         if (taps == null || taps.isEmpty()) {
@@ -39,24 +43,46 @@ public class TripBuilder {
     }
 
     private void buildTripsForPan(List<Trip> trips, List<Tap> sortedTapsOfPan) {
-        for (int i = 0; i < sortedTapsOfPan.size() - 1; i++) {
+        for (int i = 0; i < sortedTapsOfPan.size(); i++) {
             Tap tap1 = sortedTapsOfPan.get(i);
-            Tap tap2 = sortedTapsOfPan.get(i + 1);
+            Tap tap2 = null;
+            if (i != sortedTapsOfPan.size() - 1) {
+                tap2 = sortedTapsOfPan.get(i + 1);
+            }
 
-            //FIXME: Hide the use of ON/OFF.
-            //FIXME: Look for the possibility of using strategy pattern.
-            if (Tap.Type.ON.equals(tap1.getTapType()) && Tap.Type.OFF.equals(tap2.getTapType())
-                    && !tap1.isSameStopAs(tap2)) {
-                trips.add(TripBuilderHelper.buildCompletedTrip(tap1, tap2));
-                i++;
-            } else if (Tap.Type.ON.equals(tap1.getTapType())
-                    && Tap.Type.ON.equals(tap2.getTapType())
-                    && !tap1.isSameStopAs(tap2)) {
-                trips.add(TripBuilderHelper.buildIncompleteTrip(tap1));
-            } else if (Tap.Type.ON.equals(tap1.getTapType())
-                    && Tap.Type.OFF.equals(tap2.getTapType())
-                    && tap1.isSameStopAs(tap2)) {
-                trips.add(TripBuilderHelper.buildCancelledTrip(tap1));
+            // Explicitly handles scenario where either the last trip of a passenger was incomplete or invalid.
+            if (tap2 == null) {
+                switch (tap1.getTapType()) {
+                    case ON -> trips.add(TripBuilderHelper.buildIncompleteTrip(tap1));
+                    case OFF -> {
+                        // Ignored with a warning, as this could indicate a data error.
+                        LOG.warn("Tap OFF was detected without a corresponding tap ON.");
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("Details of the tap OFF event without a corresponding tap ON => " + tap1);
+                        }
+                    }
+                }
+                continue;
+            }
+
+            switch (tap1.getTapType()) {
+                case ON -> {
+                    if (Tap.Type.OFF.equals(tap2.getTapType()) && !tap1.isSameStopAs(tap2)) {
+                        trips.add(TripBuilderHelper.buildCompletedTrip(tap1, tap2));
+                        i++;
+                    } else if (Tap.Type.ON.equals(tap2.getTapType()) && !tap1.isSameStopAs(tap2)) {
+                        trips.add(TripBuilderHelper.buildIncompleteTrip(tap1));
+                    } else if (Tap.Type.OFF.equals(tap2.getTapType()) && tap1.isSameStopAs(tap2)) {
+                        trips.add(TripBuilderHelper.buildCancelledTrip(tap1));
+                    }
+                }
+                case OFF -> {
+                    // Ignored with a warning, as this could indicate a data error.
+                    LOG.warn("Tap OFF was detected without a corresponding tap ON.");
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Details of the tap OFF event without a corresponding tap ON => " + tap1);
+                    }
+                }
             }
         }
     }

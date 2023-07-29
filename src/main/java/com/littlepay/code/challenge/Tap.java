@@ -89,4 +89,16 @@ public class Tap {
     public boolean isSameStopAs(Tap tap) {
         return Objects.equals(this.stopId, tap.stopId);
     }
+
+    @Override
+    public String toString() {
+        return "Tap{" +
+                "id=" + id +
+                ", dateTime=" + dateTime +
+                ", tapType=" + tapType +
+                ", stopId='" + stopId + '\'' +
+                ", companyId='" + companyId + '\'' +
+                ", busId='" + busId + '\'' +
+                '}';
+    }
 }

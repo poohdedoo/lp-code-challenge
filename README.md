@@ -10,6 +10,7 @@ This repository includes the source code of an application developed as a respon
 * The possibility of tackling larger tap data datasets (e.g. ones that can't fit into the memory of a common virtual or otherwise execution environment) was overlooked in favour of _simplicity in the requirements_.
 * Concurrent execution of tap data processing was not attempted partly due to the aforementioned assumption, as well as _simplicity in the requirements_.
 * In scenarios where a passenger travels between two stops (e.g. Stop 1 and 3) via another stop (e.g. Stop 2) legitimately, it was assumed that s/he would always tap OFF at the transit station, and also tap ON again before getting on the next service to the desired destination.
+* As given in the sample dataset highlighted in the code challenge specification, it is acknowledged that there could potentially be tap OFF events without corresponding tap ONs possibly due to system or data errors.
 
 ## How to run
 

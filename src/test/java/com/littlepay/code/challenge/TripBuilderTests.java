@@ -144,12 +144,38 @@ public class TripBuilderTests {
     }
 
     @Test
-    public void whenUserTapsOnFromS1WithoutTappingOff_returnsMaximumTripFee() throws ParseException {
+    public void whenUserTapsOnMultipleTimesWithoutTappingOff_returnsMaximumTripFee() throws ParseException {
         List<Tap> taps = new ArrayList<>();
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         taps.add(new Tap(1, sdf.parse("22-01-2023 13:00:00"), Tap.Type.ON, "Stop1", "Company1", "Bus37",
                 "5500005555555559"));
         taps.add(new Tap(2, sdf.parse("22-01-2023 14:00:05"), Tap.Type.ON, "Stop2", "Company1", "Bus38",
+                "5500005555555559"));
+        TripBuilder tripBuilder = new TripBuilder(taps);
+
+        List<Trip> trips = tripBuilder.buildTrips();
+        assertNotNull(trips, "Trip data returned is null. Expected a non-null response.");
+        assertFalse(trips.isEmpty(), "Trip data returned is empty. Expected a non-empty response.");
+        assertEquals(2, trips.size());
+
+        Trip trip = trips.get(0);
+        assertEquals(7.30, trip.getFee());
+        assertEquals(Trip.Status.INCOMPLETE, trip.getStatus());
+        assertEquals("5500005555555559", trip.getPan());
+        assertEquals(Trip.DESTINATION_UNKNOWN, trip.getDestination());
+
+        trip = trips.get(1);
+        assertEquals(5.50, trip.getFee());
+        assertEquals(Trip.Status.INCOMPLETE, trip.getStatus());
+        assertEquals("5500005555555559", trip.getPan());
+        assertEquals(Trip.DESTINATION_UNKNOWN, trip.getDestination());
+    }
+
+    @Test
+    public void whenUserTapsOnFromS1WithoutTappingOffInLastTrip_returnsMaximumTripFee() throws ParseException {
+        List<Tap> taps = new ArrayList<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        taps.add(new Tap(1, sdf.parse("22-01-2023 13:00:00"), Tap.Type.ON, "Stop1", "Company1", "Bus37",
                 "5500005555555559"));
         TripBuilder tripBuilder = new TripBuilder(taps);
 
@@ -248,5 +274,18 @@ public class TripBuilderTests {
         assertEquals(0, trip.getFee());
         assertEquals(Trip.Status.CANCELLED, trip.getStatus());
         assertEquals("4111111111111111", trip.getPan());
+    }
+
+    @Test
+    public void whenTapOffWithoutTapOn_noTripDataGenerated() throws ParseException {
+        List<Tap> taps = new ArrayList<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        taps.add(new Tap(1, sdf.parse("22-01-2023 13:00:00"), Tap.Type.OFF, "Stop1", "Company1", "Bus37",
+                "5500005555555559"));
+        TripBuilder tripBuilder = new TripBuilder(taps);
+
+        List<Trip> trips = tripBuilder.buildTrips();
+        assertNotNull(trips, "Trip data returned is null. Expected a non-null response.");
+        assertTrue(trips.isEmpty(), "Trip data returned is non-empty. Expected an empty response.");
     }
 }
