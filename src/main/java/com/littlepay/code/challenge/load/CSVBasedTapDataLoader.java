@@ -1,7 +1,6 @@
 package com.littlepay.code.challenge.load;
 
 import com.littlepay.code.challenge.Tap;
-import com.littlepay.code.challenge.persistence.TripDataPersisterInitializationException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;

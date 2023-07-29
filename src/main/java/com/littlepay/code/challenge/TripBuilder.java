@@ -12,17 +12,17 @@ import java.util.stream.Collectors;
 
 /**
  * Builds a list of trip info from tap info.
- *
+ * <p>
  * Possible opportunities to scale:
  *  - Allowing the tapsOfPans of method `buildTrips` to be processed concurrently in memory,
  *  or submitting to an external system/application. This approach can potentially result in
  *  minor hotspots where some passengers make lots of trips while some are infrequent. In such
  *  scenarios, a fan-out approach (amongst many other alternatives) can potentially be used to further
  *  parallelize the trip computation.
- *
  *  - In a large scale setting, the ordering of trips based on start time in `buildTrips` method can
  *  potentially be a bottleneck. In such scenarios, a more scalable approach such as external Map Reduce,
  *  etc. can potentially be considered.
+ * <p>
  */
 public class TripBuilder {
     private final List<Tap> taps;
