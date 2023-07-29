@@ -49,7 +49,9 @@ In addition, you will also observe the following log messages on the command lin
 00:28:31.466 [main] INFO  com.littlepay.code.challenge.TripProcessor - Trip data generation application has successfully concluded.
 ```
 
-## How to test
+**\[Optional] Step 8:** To run and test the application with an extended dataset, use the `taps-extended.csv` file provided in the `$PROJECT_HOME/input` directory. Rename it as `taps.csv` and place it in `$WORK_DIR/input` directory before running the application. The corresponding output file `trips-extended.csv` can be located in `$PROJECT_HOME/output` directory, for reference.
+
+## How to run test cases
 
 Run the following command from within the `$PROJECT_HOME` directory to run the tests.
 
