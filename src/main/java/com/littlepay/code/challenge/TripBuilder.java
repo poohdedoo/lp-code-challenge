@@ -10,6 +10,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Builds a list of trip info from tap info.
+ *
+ * Possible opportunities to scale:
+ *  - Allowing the tapsOfPans of method `buildTrips` to be processed concurrently in memory,
+ *  or submitting to an external system/application. This approach can potentially result in
+ *  minor hotspots where some passengers make lots of trips while some are infrequent. In such
+ *  scenarios, a fan-out approach (amongst many other alternatives) can potentially be used to further
+ *  parallelize the trip computation.
+ *
+ *  - In a large scale setting, the ordering of trips based on start time in `buildTrips` method can
+ *  potentially be a bottleneck. In such scenarios, a more scalable approach such as external Map Reduce,
+ *  etc. can potentially be considered.
+ */
 public class TripBuilder {
     private final List<Tap> taps;
     private static final Logger LOG = LogManager.getLogger(TripBuilder.class);
@@ -27,7 +41,7 @@ public class TripBuilder {
         Map<String, List<Tap>> tapsByPan = this.taps.stream()
                 .collect(Collectors.groupingBy(Tap::getPan));
 
-        //FIXME: Do the following with a worker pool.
+        // Handles taps associated with each PAN independently.
         for (List<Tap> tapsOfPan : tapsByPan.values()) {
             List<Tap> sortedTapsOfPan = sortTapsOfPan(tapsOfPan);
             buildTripsForPan(trips, sortedTapsOfPan);
